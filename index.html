@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Inventario - Sistema de Control</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+    <!-- VISTA LOGIN -->
+    <div id="loginView" class="view-container">
+    <div class="login-wrapper">
+    <div class="login-card">
+    <div class="text-center mb-4">
+<i class="bi bi-box2-heart" style="font-size: 3rem; color: #0d6efd;"></i>
+<h1 class="mt-3">Gestor de Inventario</h1>
+<p class="text-muted">Sistema de Control Profesional</p>
+</div>
+
+<form id="loginForm">
+<div class="mb-3">
+<label for="loginUser" class="form-label">Usuario</label>
+<input type="text" class="form-control form-control-lg" id="loginUser" placeholder="admin o empleado" required>
+</div>
+
+<div class="mb-3">
+<label for="loginPassword" class="form-label">Contraseña</label>
+<input type="password" class="form-control form-control-lg" id="loginPassword" placeholder="password" required>
+</div>
+
+<div class="d-grid">
+<button type="submit" class="btn btn-primary btn-lg">Iniciar Sesión</button>
+</div>
+
+<hr>
+<div class="alert alert-info" role="alert">
+<strong>Credenciales Demo:</strong><br>
+<small><strong>Admin:</strong> admin / password</small><br>
+<small><strong>Empleado:</strong> empleado / password</small>
+</div>
+</form>
+</div>
+</div>
+</div>
+
+    <!-- VISTA ADMIN DASHBOARD -->
+    <div id="adminView" class="view-container d-none">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container-fluid">
+                <span class="navbar-brand">
+                    <i class="bi bi-box2-heart"></i> Gestor de Inventario - Admin
+                </span>
+                <div class="ms-auto">
+                    <span class="navbar-text text-white me-3">
+                        <i class="bi bi-person-circle"></i> <span id="adminUserName">Admin</span>
+                    </span>
+                    <button class="btn btn-outline-light btn-sm" id="adminLogout">Cerrar Sesión</button>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container-fluid mt-4">
+            <ul class="nav nav-tabs mb-4" id="adminTabs">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" data-tab="productos">
+                        <i class="bi bi-box"></i> Productos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-tab="categorias">
+                        <i class="bi bi-tag"></i> Categorías
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-tab="movimientos">
+                        <i class="bi bi-arrow-repeat"></i> Movimientos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-tab="reportes">
+                        <i class="bi bi-bar-chart"></i> Reportes
+                    </a>
+                </li>
+            </ul>
+
+            <!-- TAB: PRODUCTOS -->
+            <div id="productosTab" class="tab-content">
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <h3><i class="bi bi-box"></i> Gestión de Productos</h3>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <button class="btn btn-success" id="btnNuevoProducto">
+                            <i class="bi bi-plus-circle"></i> Nuevo Producto
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="searchProductos" placeholder="Buscar producto...">
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="filterCategoria">
+                            <option value="">Todas las categorías</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Código</th>
+                                <th>Nombre</th>
+                                <th>Categoría</th>
+                                <th>Stock</th>
+                                <th>Stock Mínimo</th>
+                                <th>Precio</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productosTableBody">
+                            <tr><td colspan="7" class="text-center text-muted">Cargando productos...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB: CATEGORÍAS -->
+            <div id="categoriasTab" class="tab-content d-none">
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <h3><i class="bi bi-tag"></i> Gestión de Categorías</h3>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <button class="btn btn-success" id="btnNuevaCategoria">
+                            <i class="bi bi-plus-circle"></i> Nueva Categoría
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div id="categoriasList" class="list-group">
+                            <div class="list-group-item">Cargando categorías...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: MOVIMIENTOS -->
+            <div id="movimientosTab" class="tab-content d-none">
+                <h3 class="mb-4"><i class="bi bi-arrow-repeat"></i> Historial de Movimientos</h3>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="searchMovimientos" placeholder="Buscar por producto...">
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="filterTipoMovimiento">
+                            <option value="">Todos los tipos</option>
+                            <option value="entrada">Entrada</option>
+                            <option value="salida">Salida</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th>Producto</th>
+                                <th>Tipo</th>
+                                <th>Cantidad</th>
+                                <th>Razón</th>
+                                <th>Usuario</th>
+                                <th>Stock Anterior</th>
+                                <th>Stock Nuevo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="movimientosTableBody">
+                            <tr><td colspan="9" class="text-center text-muted">Cargando movimientos...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB: REPORTES -->
+            <div id="reportesTab" class="tab-content d-none">
+                <h3 class="mb-4"><i class="bi bi-bar-chart"></i> Reportes y Estadísticas</h3>
+
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h6 class="card-title text-muted">Total Productos</h6>
+                                <h2 id="estadTotalProductos" class="text-primary">0</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h6 class="card-title text-muted">Bajo Stock</h6>
+                                <h2 id="estadBajoStock" class="text-warning">0</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h6 class="card-title text-muted">Stock Agotado</h6>
+                                <h2 id="estadSinStock" class="text-danger">0</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h6 class="card-title text-muted">Total Movimientos</h6>
+                                <h2 id="estadTotalMovimientos" class="text-info">0</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Productos con Bajo Stock</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="reporteBajoStock" class="list-group">
+                                    <div class="list-group-item">Cargando...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Top 5 Productos Más Movidos</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="reporteTopProductos" class="list-group">
+                                    <div class="list-group-item">Cargando...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- VISTA EMPLEADO -->
+    <div id="empleadoView" class="view-container d-none">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+            <div class="container-fluid">
+                <span class="navbar-brand">
+                    <i class="bi bi-box2-heart"></i> Gestor de Inventario - Empleado
+                </span>
+                <div class="ms-auto">
+                    <span class="navbar-text text-white me-3">
+                        <i class="bi bi-person-circle"></i> <span id="empleadoUserName">Empleado</span>
+                    </span>
+                    <button class="btn btn-outline-light btn-sm" id="empleadoLogout">Cerrar Sesión</button>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container-fluid mt-4">
+            <ul class="nav nav-tabs mb-4" id="empleadoTabs">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" data-tab="movimientos-empleado">
+                        <i class="bi bi-arrow-repeat"></i> Movimientos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-tab="consulta-inventario">
+                        <i class="bi bi-binoculars"></i> Consultar Inventario
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-tab="mis-movimientos">
+                        <i class="bi bi-clock-history"></i> Mis Movimientos
+                    </a>
+                </li>
+            </ul>
+
+            <!-- TAB: MOVIMIENTOS EMPLEADO -->
+            <div id="movimientosEmpleadoTab" class="tab-content">
+                <div class="row">
+                    <div class="col-lg-6 mx-auto">
+                        <div class="card">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Registrar Movimiento</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="formMovimiento">
+                                    <div class="mb-3">
+                                        <label for="movProducto" class="form-label">Producto</label>
+                                        <select class="form-select" id="movProducto" required>
+                                            <option value="">Seleccionar producto...</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="movTipo" class="form-label">Tipo de Movimiento</label>
+                                        <select class="form-select" id="movTipo" required>
+                                            <option value="">Seleccionar...</option>
+                                            <option value="entrada">Entrada (Compra)</option>
+                                            <option value="salida">Salida (Venta)</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="movCantidad" class="form-label">Cantidad</label>
+                                        <input type="number" class="form-control" id="movCantidad" min="1" required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="movRazon" class="form-label">Razón / Observación</label>
+                                        <textarea class="form-control" id="movRazon" rows="3" placeholder="Descripción del movimiento"></textarea>
+                                    </div>
+
+                                    <div class="d-grid gap-2">
+                                        <button type="submit" class="btn btn-primary btn-lg">
+                                            <i class="bi bi-check-circle"></i> Registrar Movimiento
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: CONSULTA INVENTARIO -->
+            <div id="consultaInventarioTab" class="tab-content d-none">
+                <h3 class="mb-4">Inventario Disponible</h3>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="searchInventario" placeholder="Buscar producto...">
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="filterCategoriaEmpleado">
+                            <option value="">Todas las categorías</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Código</th>
+                                <th>Nombre</th>
+                                <th>Categoría</th>
+                                <th>Stock Disponible</th>
+                                <th>Precio</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventarioTableBody">
+                            <tr><td colspan="6" class="text-center text-muted">Cargando inventario...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB: MIS MOVIMIENTOS -->
+            <div id="misMovimientosTab" class="tab-content d-none">
+                <h3 class="mb-4">Mis Movimientos Registrados</h3>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="searchMisMovimientos" placeholder="Buscar por producto...">
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th>Producto</th>
+                                <th>Tipo</th>
+                                <th>Cantidad</th>
+                                <th>Razón</th>
+                            </tr>
+                        </thead>
+                        <tbody id="misMovimientosTableBody">
+                            <tr><td colspan="6" class="text-center text-muted">Cargando movimientos...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: NUEVO/EDITAR PRODUCTO -->
+    <div class="modal fade" id="modalProducto" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalProductoTitle">Nuevo Producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formProducto">
+                        <div class="mb-3">
+                            <label for="prodCodigo" class="form-label">Código</label>
+                            <input type="text" class="form-control" id="prodCodigo" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="prodNombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="prodNombre" required>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="prodCategoria" class="form-label">Categoría</label>
+                                    <select class="form-select" id="prodCategoria" required>
+                                        <option value="">Seleccionar categoría...</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="prodDescripcion" class="form-label">Descripción</label>
+                                    <input type="text" class="form-control" id="prodDescripcion">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="prodStock" class="form-label">Stock Inicial</label>
+                                    <input type="number" class="form-control" id="prodStock" min="0" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="prodStockMin" class="form-label">Stock Mínimo</label>
+                                    <input type="number" class="form-control" id="prodStockMin" min="0" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="prodPrecio" class="form-label">Precio Unitario</label>
+                            <input type="number" class="form-control" id="prodPrecio" min="0" step="0.01" required>
+                        </div>
+
+                        <div id="formProductoActions" class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">Guardar Producto</button>
+                            <button type="button" class="btn btn-danger d-none" id="btnEliminarProducto">Eliminar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: NUEVA CATEGORÍA -->
+    <div class="modal fade" id="modalCategoria" tabindex="-1">
+    <div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title">Nueva Categoría</h5>
+<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body">
+<form id="formCategoria">
+<div class="mb-3">
+<label for="catNombre" class="form-label">Nombre de la Categoría</label>
+<input type="text" class="form-control" id="catNombre" required>
+</div>
+
+<div class="mb-3">
+<label for="catDescripcion" class="form-label">Descripción</label>
+<textarea class="form-control" id="catDescripcion" rows="3"></textarea>
+</div>
+
+<div id="formCategoriaActions" class="d-flex gap-2">
+<button type="submit" class="btn btn-success">Guardar Categoría</button>
+<button type="button" class="btn btn-danger d-none" id="btnEliminarCategoria">Eliminar</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
